@@ -12,7 +12,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import Stripe from 'stripe';
 
 @Controller('subscription')
@@ -23,7 +23,7 @@ export class SubscriptionController {
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (stripeKey) {
       this.stripe = new Stripe(stripeKey, {
-        apiVersion: '2024-12-18.acacia',
+        apiVersion: '2025-12-15.clover',
       });
     }
   }
@@ -104,7 +104,21 @@ export class SubscriptionController {
 
     try {
       // Get raw body for signature verification
-      const rawBody = req.body;
+      let rawBody: Buffer;
+      if (req.rawBody) {
+        rawBody = req.rawBody;
+      } else {
+        // Convert ReadableStream to Buffer if needed
+        const chunks: any[] = [];
+        const reader = req.body.getReader();
+        let done = false;
+        while (!done) {
+          const { value, done: streamDone } = await reader.read();
+          if (value) chunks.push(value);
+          done = streamDone;
+        }
+        rawBody = Buffer.concat(chunks);
+      }
       event = this.stripe.webhooks.constructEvent(
         rawBody,
         signature,

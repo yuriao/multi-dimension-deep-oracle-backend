@@ -18,7 +18,7 @@ export class SubscriptionService {
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (stripeKey) {
       this.stripe = new Stripe(stripeKey, {
-        apiVersion: '2024-12-18.acacia',
+        apiVersion: '2025-12-15.clover',
       });
     }
   }
@@ -286,7 +286,7 @@ export class SubscriptionService {
     }
 
     try {
-      const user = await this.userService.findById(userId);
+      const user = await this.userService.findOne(userId);
 
       const session = await this.stripe.checkout.sessions.create({
         mode: 'subscription',
@@ -371,9 +371,9 @@ export class SubscriptionService {
 
     if (subscription) {
       subscription.status = isActive ? 'active' : 'expired';
-      subscription.expiry_date = new Date(stripeSubscription.current_period_end * 1000);
-      subscription.auto_renew = !stripeSubscription.cancel_at_period_end;
-      subscription.metadata = stripeSubscription;
+      subscription.expiry_date = new Date((stripeSubscription as any).current_period_end * 1000);
+      subscription.auto_renew = !(stripeSubscription as any).cancel_at_period_end;
+      subscription.metadata = stripeSubscription as any;
     } else {
       subscription = this.subscriptionRepository.create({
         user_id: userId,
@@ -382,10 +382,10 @@ export class SubscriptionService {
         platform_subscription_id: stripeSubscription.id,
         status: isActive ? 'active' : 'expired',
         interval: interval as 'month' | 'year',
-        start_date: new Date(stripeSubscription.current_period_start * 1000),
-        expiry_date: new Date(stripeSubscription.current_period_end * 1000),
-        auto_renew: !stripeSubscription.cancel_at_period_end,
-        metadata: stripeSubscription,
+        start_date: new Date((stripeSubscription as any).current_period_start * 1000),
+        expiry_date: new Date((stripeSubscription as any).current_period_end * 1000),
+        auto_renew: !(stripeSubscription as any).cancel_at_period_end,
+        metadata: stripeSubscription as any,
       });
     }
 
@@ -421,7 +421,7 @@ export class SubscriptionService {
   }
 
   private async handlePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
-    const subscriptionId = invoice.subscription as string;
+    const subscriptionId = (invoice as any).subscription as string;
     if (!subscriptionId) return;
 
     const subscription = await this.subscriptionRepository.findOne({
