@@ -14,6 +14,10 @@ export class UpdateProfileDto {
   @IsOptional()
   display_name?: string;
 
+  @IsString()
+  @IsOptional()
+  username?: string;
+
   @IsDateString()
   @IsOptional()
   birth_date?: string;
