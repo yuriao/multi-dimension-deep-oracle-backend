@@ -30,6 +30,9 @@ export class UserProfile {
   @Column({ length: 100, nullable: true })
   display_name: string;
 
+  @Column({ length: 50, nullable: true })
+  username: string;
+
   @Column({ type: 'varchar', nullable: true })
   birth_date: string;
 
