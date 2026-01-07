@@ -5215,9 +5215,10 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const app_module_1 = __webpack_require__(/*! ./app.module */ "./src/app.module.ts");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    const allowedOrigins = process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(',')
-        : '*';
+    const corsOrigin = process.env.CORS_ORIGIN || '*';
+    const allowedOrigins = corsOrigin === '*'
+        ? '*'
+        : corsOrigin.split(',').map(origin => origin.trim());
     app.enableCors({
         origin: allowedOrigins,
         credentials: true,
