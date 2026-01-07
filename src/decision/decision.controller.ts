@@ -14,6 +14,7 @@ import {
 import { DecisionService } from './decision.service';
 import { CreateDecisionDto } from './dto/create-decision.dto';
 import { FeedbackDto } from './dto/feedback.dto';
+import { InvokeRitualDto } from './dto/invoke-ritual.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('decisions')
@@ -54,5 +55,16 @@ export class DecisionController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Request() req, @Param('id') id: string) {
     await this.decisionService.deleteDecision(req.user.id, id);
+  }
+
+  // Ritual endpoint (merged from RitualController)
+  @Post('ritual')
+  async invokeRitual(@Request() req, @Body() invokeDto: InvokeRitualDto) {
+    return this.decisionService.invokeRitual(
+      req.user.id,
+      invokeDto.type,
+      invokeDto.text,
+      invokeDto.selected_modules,
+    );
   }
 }

@@ -6,8 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { DivinationModule } from './divination/divination.module';
 import { DecisionModule } from './decision/decision.module';
-import { ContentModule } from './content/content.module';
-import { RitualModule } from './ritual/ritual.module';
 import { DeepSeekModule } from './deepseek/deepseek.module';
 import { ChatModule } from './chat/chat.module';
 import { SubscriptionModule } from './subscription/subscription.module';
@@ -65,8 +63,6 @@ import { Subscription } from './subscription/entities/subscription.entity';
     UserModule,
     DivinationModule,
     DecisionModule,
-    ContentModule,
-    RitualModule,
     DeepSeekModule,
     ChatModule,
     SubscriptionModule,
